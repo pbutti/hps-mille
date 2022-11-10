@@ -11,7 +11,10 @@ import json
 class cfg :
     __instance = None
     def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
-                 mvnopts = [], gbldir = None, pede = 'pede', scratch = '/tmp/') :
+                 mvnopts = [], gbldir = None, pede = 'pede', scratch = '/tmp/',
+                 kf_steer = None, gbl_steer = None) :
+
+        package = os.path.dirname(__file__)
         self.container = False
         if os.path.exists('/singularity') :
             self.container = True
@@ -21,7 +24,6 @@ class cfg :
                 javadir = os.environ['HPS_JAVA_DIR']
             else :
                 # we weren't told so lets check some options
-                package = os.path.dirname(__file__)
                 parent = os.path.dirname(package)
                 grandparent = os.path.dirname(parent)
                 opts = [parent, grandparent, os.path.dirname(grandparent)]
@@ -78,6 +80,17 @@ class cfg :
 
         self.scratch = os.path.join(scratch,'hps-align')
         os.makedirs(self.scratch, exist_ok=True)
+
+        if kf_steer is not None :
+            kf_steer = os.path.join(package,'tracking_kf_alignment.lcsim')
+
+        self.kf_steer = kf_steer
+
+        if gbl_steer is not None :
+            gbl_steer = os.path.join(package,'tracking_gbl_alignment.lcsim')
+
+        self.gbl_steer = gbl_steer
+        
 
     def __str__(self) :
         return json.dumps(self.__dict__, indent=2)
