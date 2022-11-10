@@ -5,7 +5,7 @@
 Calls into this module.
 """
 
-import cli
+import _align
 
 if __name__ == '__main__' :
-    cli.main()
+    _align.app()

@@ -6,13 +6,13 @@ import sys
 import _cmd
 from _cfg import cfg
 
-def construct() :
-    parser = argparse.ArgumentParser(description = 'construct an LCDD from a compact.xml')
+from typing import Optional
+import typer
 
-    parser.add_argument('det_name', help='name of detector')
+app = typer.Typer()
 
-    args = parser.parse_args(sys.argv[2:])
-
+@app.command()
+def construct(det_name : str) :
     detector_dir = os.path.join(cfg.cfg().javadir, 'detector-data/detectors', det_name)
     # construct LCDD from compact
     _cmd.run(['java'] + cfg.cfg().javaopts + [
@@ -31,16 +31,8 @@ def construct() :
     _cmd.run(['mvn'] + cfg.cfg().mvnopts, cwd=os.path.join(cfg.cfg().javadir,'detector-data'))
     _cmd.run(['mvn'] + cfg.cfg().mvnopts, cwd=os.path.join(cfg.cfg().javadir,'distribution'))
     
-def tracking() :
-    parser = argparse.ArgumentParser(description = 'construct an LCDD from a compact.xml')
-
-    parser.add_argument('det_name', help='name of detector')
-    parser.add_argument('output_prefix', help='prefix output files in steering file with this string')
-    parser.add_argument('--run',type=int,help='run number so conditions are usable')
-    parser.add_argument('--steering',help='steering file')
-    parser.add_argument('--input',help='input slcio file')
-
-    args = parser.parse_args(sys.argv[2:])
+@app.command()
+def tracking(det_name : str, output_file_prefix : str, run : int, steering : str, input_file : str) :
 
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet
@@ -60,6 +52,7 @@ def tracking() :
       '-i', input_file
       ])
 
+@app.command()
 def millepede() :
 
     # get default parameters depending on beamspot and year
