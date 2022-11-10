@@ -2,28 +2,19 @@
 
 import argparse
 import sys
+import inspect
 from _cfg import cfg
-from _align import construct_detector, tracking
+import _align
 
 def main() :
+    stage_choices = dict(inspect.getmembers(_align, inspect.isfunction))
+
     parser = argparse.ArgumentParser('python3 align',
+        description='run various stages of alignment procedure',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--log', help='redirect command printouts to passed file')
-    parser.add_argument('det_name', help='Base name for detector (i.e. omit iteration)')
-    parser.add_argument('stage', nargs='+', choices=['construct','tracking'], help='choose which stage or stages to run')
+    parser.add_argument('stage', choices = stage_choices.keys(), help='choose which stage or stages to run')
 
-    arg = parser.parse_args()
+    arg = parser.parse_args(sys.argv[1:2])
 
-    log = sys.stdout
-    if arg.log is not None :
-        log = open(arg.log, 'w') 
-
-    for s in arg.stage :
-        if s == 'construct' :
-            construct_detector(arg.det_name, log = log)
-        elif s == 'tracking' :
-            tracking(arg.det_name)
-
-    if arg.log is not None :
-        log.close()
+    stage_choices[arg.stage]()

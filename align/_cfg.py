@@ -5,12 +5,14 @@ later access
 """
 
 import os
+import shutil
+import json
 
 class cfg :
     __instance = None
-    def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], mvnopts = [], gbldir = None) :
+    def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
+                 mvnopts = [], gbldir = None, pede = 'pede', scratch = '/tmp/') :
         self.container = False
-        import os
         if os.path.exists('/singularity') :
             self.container = True
 
@@ -66,8 +68,18 @@ class cfg :
 
         self.mvnopts = mvnopts
 
+        pede_fp = shutil.which(pede)
+        if pede_fp is None :
+            print(f'WARN: {pede} not found. Please provide full path to the configuration object.')
+        self.pede = pede_fp
+
+        if not os.path.isdir(scratch) :
+            raise KeyError(f'Scratch directory {scratch} does not exist')
+
+        self.scratch = os.path.join(scratch,'hps-align')
+        os.makedirs(self.scratch, exist_ok=True)
+
     def __str__(self) :
-        import json
         return json.dumps(self.__dict__, indent=2)
 
     def cfg(**kwargs) :
