@@ -137,8 +137,6 @@ def printEigenInfo(mpfile='millepede.eve'):
     status = subprocess.call("cat " + mpfile, shell=True)
     return
 
-
-
 def getPathSorted(paramaters):
     result = []
     for p in parameters:
