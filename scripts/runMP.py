@@ -206,19 +206,21 @@ def buildSteerFile(name,args,pars,minimStr):
 
 def saveResults(args):
     inputfilenames = args.inputfiles
-    name = args.name
-    outDir=args.outDir+args.name
+    outDir=args.outDir
+    if args.name is not None :
+        outDir += args.name
     if not os.path.exists(outDir):
         os.makedirs(outDir)
     
     names = [ os.path.splitext(os.path.basename(n))[0] for n in inputfilenames] 
-    filename = '-'
-    filename = filename.join(names)
-    status = subprocess.call("cp millepede.res " + " "+outDir+"/millepede-" + filename + "-" + name + ".res", shell=True)
-    status = subprocess.call("cp millepede.eve " + " "+outDir+"/millepede-" + filename + "-" + name + ".eve", shell=True)
-    status = subprocess.call("cp millepede.log " + " "+outDir+"/millepede-" + filename + "-" + name + ".log", shell=True)
-    status = subprocess.call("cp millepede.his " + " "+outDir+"/millepede-" + filename + "-" + name + ".his", shell=True)
-    status = subprocess.call("cp steer.txt "     + " "+outDir+"/millepede-steer-" + filename + "-" + name + ".txt", shell=True) 
+    if args.name is not None :
+        names.append(args.name)
+    filename = '-'.join(names)
+    status = subprocess.call("cp millepede.res " + " "+outDir+"/millepede-" + filename + ".res", shell=True)
+    #status = subprocess.call("cp millepede.eve " + " "+outDir+"/millepede-" + filename + ".eve", shell=True)
+    status = subprocess.call("cp millepede.log " + " "+outDir+"/millepede-" + filename + ".log", shell=True)
+    status = subprocess.call("cp millepede.his " + " "+outDir+"/millepede-" + filename + ".his", shell=True)
+    status = subprocess.call("cp steer.txt "     + " "+outDir+"/millepede-steer-" + filename + ".txt", shell=True) 
     
 
 def runPede(filename,args):
@@ -311,9 +313,7 @@ def main(args):
     # print results
     printResults()
 
-    # save results to a specific name if supplied.
-    if args.name != None:
-        saveResults(args)
+    saveResults(args)
 
     
 if __name__ == "__main__":
