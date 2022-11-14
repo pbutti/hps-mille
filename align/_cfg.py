@@ -14,7 +14,7 @@ class cfg :
                  mvnopts = [], gbldir = None, pede = 'pede', scratch = '/tmp/',
                  kf_steer = None, gbl_steer = None) :
 
-        package = os.path.dirname(__file__)
+        package = os.path.abspath(os.path.dirname(__file__))
         self.container = False
         if os.path.exists('/singularity') :
             self.container = True
@@ -24,13 +24,18 @@ class cfg :
                 javadir = os.environ['HPS_JAVA_DIR']
             else :
                 # we weren't told so lets check some options
+                print(package)
                 parent = os.path.dirname(package)
                 grandparent = os.path.dirname(parent)
                 opts = [parent, grandparent, os.path.dirname(grandparent)]
                 if 'HPS_HOME' in os.environ :
                     opts.append(os.environ['HPS_HOME'])
 
+                print(opts)
+
                 opts = [os.path.join(d,s) for d in opts for s in ['java','hps-java']]
+
+                print(opts)
 
                 for sd in opts :
                     if os.path.exists(sd) :
@@ -59,14 +64,10 @@ class cfg :
             if gbldir is None :
                 # deduce GBL location
                 print('WARN: Unable to deduce gbldir. Set with _cfg.jarfile before attempting to run')
-
             if gbldir is not None :
                 javaopts.extend(['-Djna.library.path={gbldir}/lib'])
         
         self.javaopts = javaopts
-
-        if self.container :
-            mvnopts.extend(['--global-settings','/etc/mvn_settings.xml'])
 
         self.mvnopts = mvnopts
 
@@ -78,7 +79,10 @@ class cfg :
         if not os.path.isdir(scratch) :
             raise KeyError(f'Scratch directory {scratch} does not exist')
 
-        self.scratch = os.path.join(scratch,'hps-align')
+        if scratch is None :
+            scratch = os.getcwd()
+
+        self.scratch = os.path.join(scratch,'hps-align-scratch')
         os.makedirs(self.scratch, exist_ok=True)
 
         if kf_steer is not None :

@@ -91,6 +91,15 @@ def millepede() :
 
     return
 
+@app.command()
+def config() :
+    """
+    Print the deduced/parsed config for debugging
+    """
+
+    print(cfg.cfg())
+    return
+
 @app.callback()
 def main(config : str =  typer.Option(None,help='JSON config file')):
     """
