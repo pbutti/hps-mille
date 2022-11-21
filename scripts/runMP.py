@@ -12,7 +12,7 @@ def getArgs():
     parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
     parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
     parser.add_argument('-y','--year',dest="year",help="Which detector geometry? (2016 or 2019 [default])",default="2019")
-    parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default="./MPII_results_")
+    parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default=None)
     parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
@@ -206,9 +206,11 @@ def buildSteerFile(name,args,pars,minimStr):
 
 def saveResults(args):
     inputfilenames = args.inputfiles
-    outDir=args.outDir
+    outDir=os.path.dirname(args.inputfiles[0])
+    if args.outDir is not None :
+        outDir = args.outDir
     if args.name is not None :
-        outDir += args.name
+        outDir += '/' + args.name
     if not os.path.exists(outDir):
         os.makedirs(outDir)
     
