@@ -11,7 +11,8 @@ import json
 class cfg :
     __instance = None
     def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
-                 mvnopts = [], gbldir = None, pede = 'pede', scratch = '/tmp/',
+                 mvnopts = ['-DskipTests','-Dcheckstyle.skip'], 
+                 gbldir = None, pede = 'pede', scratch = '/tmp/',
                  kf_steer = None, st_steer = None) :
 
         package = os.path.abspath(os.path.dirname(__file__))

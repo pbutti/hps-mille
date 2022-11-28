@@ -54,7 +54,7 @@ def tracking(det_name : str, run : int, input_file : str,
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet
     import os
-    d = os.path.dirname(output_file_prefix)
+    d = os.path.dirname(out_prefix)
     if d != '' :
         os.makedirs(d, exist_ok=True)
 
@@ -70,9 +70,9 @@ def tracking(det_name : str, run : int, input_file : str,
     _cmd.run(['java'] + cfg.cfg().javaopts + [
       '-DdisableSvtAlignmentConstants',
       '-jar', cfg.cfg().jarfile,
-      '-R', run, 
+      '-R', str(run), 
       '-d', det_name,
-      f'-DoutputFile={output_file_prefix}',
+      f'-DoutputFile={out_prefix}',
       steering,
       '-i', input_file
       ])
