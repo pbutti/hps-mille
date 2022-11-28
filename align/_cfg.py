@@ -12,7 +12,7 @@ class cfg :
     __instance = None
     def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
                  mvnopts = ['-DskipTests','-Dcheckstyle.skip'], 
-                 gbldir = None, pede = 'pede', scratch = '/tmp/',
+                 gbldir = None, pede = 'pede', scratch = None,
                  kf_steer = None, st_steer = None) :
 
         package = os.path.abspath(os.path.dirname(__file__))
@@ -72,11 +72,10 @@ class cfg :
             print(f'WARN: {pede} not found. Please provide full path to the configuration object.')
         self.pede = pede_fp
 
-        if not os.path.isdir(scratch) :
-            raise KeyError(f'Scratch directory {scratch} does not exist')
-
         if scratch is None :
             scratch = os.getcwd()
+        elif not os.path.isdir(scratch) :
+            raise KeyError(f'Scratch directory {scratch} does not exist')
 
         self.scratch = os.path.join(scratch,'hps-align-scratch')
         os.makedirs(self.scratch, exist_ok=True)
