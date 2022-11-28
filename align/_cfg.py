@@ -61,7 +61,7 @@ class cfg :
                 # deduce GBL location
                 print('WARN: Unable to deduce gbldir. Set with cfg.set_gbldir before attempting to run')
             if gbldir is not None :
-                javaopts.extend(['-Djna.library.path={gbldir}/lib'])
+                javaopts.extend([f'-Djna.library.path={gbldir}/lib'])
         
         self.javaopts = javaopts
 

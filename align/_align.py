@@ -4,6 +4,7 @@
 import argparse
 import os
 import sys
+import json
 
 # external deps
 import typer
