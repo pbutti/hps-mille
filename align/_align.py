@@ -30,7 +30,7 @@ def construct(det_name : str) :
         '-f', 'lcdd',
         '-i', f'{detector_dir}/compact.xml',
         '-o', f'{detector_dir}/{det_name}.lcdd'
-      ], cwd = cfg.cfg().javadir)
+      ], cwd = os.path.join(cfg.cfg().javadir,'detector-data'))
 
     # write detector name
     with open(f'{detector_dir}/detector.properties','w') as f :
@@ -42,7 +42,7 @@ def construct(det_name : str) :
     
 @app.command()
 def tracking(det_name : str, run : int, input_file : str, 
-    method : str = typer.Option('kf',help='type of tracking to do (kf or gbl)'),
+    method : str = typer.Option('kf',help='type of tracking to do (kf or st)'),
     out_prefix : str = typer.Option(None,help='prefix to put onto output files'), 
     ) :
     """
@@ -57,6 +57,14 @@ def tracking(det_name : str, run : int, input_file : str,
     d = os.path.dirname(output_file_prefix)
     if d != '' :
         os.makedirs(d, exist_ok=True)
+
+    steering = None
+    if method == 'kf' :
+        steering = cfg.cfg().kf_steer
+    elif method == 'st' :
+        steering = cfg.cfg().st_steer
+    else :
+        raise ValueError('Unknown tracking method "%s", choices are "kf" or "st"' % method)
 
     # run tracking over the input detector
     _cmd.run(['java'] + cfg.cfg().javaopts + [
