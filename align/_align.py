@@ -87,12 +87,12 @@ def tracking(det_name : str, run : int, input_file : str,
 def millepede(
         input_file : List[str],
         to_float : List[str],
+        year : int = typer.Option(2019,
+            help='year data was taken, determines set of parameters'),
         survey_constraints : bool = typer.Option(False,
             help='apply constraints from survey'),
         beamspot_constraints : bool = typer.Option(False,
             help='apply beam spot constraints'),
-        minimization : str = typer.Option(cfg.cfg().pede_minimization,
-            help='file holding the minimization settings for pede'),
         constraint_file : str = typer.Option(None,
             help='optional external constraint file for pede')
         ) :
@@ -101,13 +101,22 @@ def millepede(
     """
 
     # get default parameters depending on beamspot and year
+    param_map_file = os.path.join(cfg.cfg().data_dir,'param_maps','hpsSvtParamMap.txt')
+    if year == 2019
+        param_map_file = os.path.join(cfg.cfg().data_dir,'param_maps','hpsSvtParamMap_2019.txt')
+
+    with open(param_map_file) as pmf :
+        param_map = {
+                int(line.split())[0] : line.split()[1]
+                for line in pmf if 'MilleParameter' not in line
+                }
 
     # update parameters from previous fit
 
     # define which parameters are floating
 
     # determine MP minimization settings
-    with open(minimization) as minfile :
+    with open(cfg.cfg().pede_minimization) as minfile :
         minimization = minfile.readlines()
 
     # build steering file for pede

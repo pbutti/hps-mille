@@ -13,13 +13,15 @@ class cfg :
     def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
                  mvnopts = ['-DskipTests','-Dcheckstyle.skip'], 
                  gbldir = None, pede = 'pede', scratch = None,
-                 year = 2019, param_map = None, pede_minimization = None,
+                 pede_minimization = None,
                  kf_steer = None, st_steer = None) :
 
         package = os.path.abspath(os.path.dirname(__file__))
         self.container = False
         if os.path.exists('/singularity') :
             self.container = True
+
+        self.data_dir = os.path.join(package,'data')
 
         if javadir is None :
             if 'HPS_JAVA_DIR' in os.environ :
@@ -90,14 +92,6 @@ class cfg :
             st_steer = os.path.join(package,'data/java_steer','tracking_st_alignment.lcsim')
 
         self.st_steer = st_steer
-
-        if param_map is None :
-            if year == 2019 :
-                param_map = os.path.join(package, 'data/param_maps','hpsSvtParamMap_2019.txt')
-            else :
-                param_map = os.path.join(package, 'data/param_maps','hpsSvtParamMap.txt')
-
-        self.param_map = param_map
 
         if pede_minimization is None :
             pede_minimization = os.path.join(package, 
