@@ -13,6 +13,7 @@ class cfg :
     def __init__(self, jarfile = None, javadir = None, javaopts = ['-XX:+UseSerialGC','-Xmx5000m'], 
                  mvnopts = ['-DskipTests','-Dcheckstyle.skip'], 
                  gbldir = None, pede = 'pede', scratch = None,
+                 year = 2019, param_map = None, pede_minimization = None,
                  kf_steer = None, st_steer = None) :
 
         package = os.path.abspath(os.path.dirname(__file__))
@@ -81,14 +82,28 @@ class cfg :
         os.makedirs(self.scratch, exist_ok=True)
 
         if kf_steer is None :
-            kf_steer = os.path.join(package,'tracking_kf_alignment.lcsim')
+            kf_steer = os.path.join(package,'data/java_steer','tracking_kf_alignment.lcsim')
 
         self.kf_steer = kf_steer
 
         if st_steer is None :
-            st_steer = os.path.join(package,'tracking_st_alignment.lcsim')
+            st_steer = os.path.join(package,'data/java_steer','tracking_st_alignment.lcsim')
 
         self.st_steer = st_steer
+
+        if param_map is None :
+            if year == 2019 :
+                param_map = os.path.join(package, 'data/param_maps','hpsSvtParamMap_2019.txt')
+            else :
+                param_map = os.path.join(package, 'data/param_maps','hpsSvtParamMap.txt')
+
+        self.param_map = param_map
+
+        if pede_minimization is None :
+            pede_minimization = os.path.join(package, 
+                    'data/pede_steer/steer_minimization_template.txt')
+
+        self.pede_minimization = pede_minimization
 
     def __str__(self) :
         return json.dumps(self.__dict__, indent=2)
