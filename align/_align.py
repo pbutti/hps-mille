@@ -17,7 +17,7 @@ import _cmd
 from _cfg import cfg
 from _parameter import Parameter
 
-app = typer.Typer()
+app = typer.Typer(name='mille/align')
 
 @app.command()
 def construct(det_name : str) :
@@ -254,9 +254,7 @@ def apply(pede_res : str, detector : str,
             if not interactive and not force :
                 raise ValueError(f'Detector {detector} already exists and so it cannot be created')
             if interactive :
-                ans = input(f'Overwite already existing detector {detector}? (y/Y/n/N) ')
-                if ans.lower() not in ['y','yes'] :
-                    return
+                typer.confirm(f'Overwite already existing detector {detector}?', abort=True)
 
         # make copy
         shutil.copytree(src_path, dest_path, dirs_exist_ok = True)
@@ -310,21 +308,15 @@ def apply(pede_res : str, detector : str,
                         new_value = f'{value} {op} {abs(parameters[i].val)}'
 
                         if interactive :
-                            ans = input(f'Update {i} from "{value}" to "{new_value}"? (y/Y/n/N) ')
-                            if ans.lower() in ['y','yes'] :
+                            doit = typer.confirm(f'Update {i} from "{value}" to "{new_value}"?')
+                            if doit :
                                 f.write(f'{pre_val}{new_value}{post_val}')
-                            elif ans.lower() in ['q','quit'] :
-                                return
                             else :
                                 f.write(line)
                         else :
                             f.write(f'{pre_val}{new_value}{post_val}')
 
-    if interactive :
-        ans = input('Delete original copy? (y/Y/n/N) ')
-        if ans.lower() in ['y','yes'] :
-            os.remove(original_cp)
-    elif cleanup :
+    if (interactive and typer.confirm('Delete original copy?')) or cleanup :
         os.remove(original_cp)
 
 @app.command()
