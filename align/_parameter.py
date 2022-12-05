@@ -67,6 +67,7 @@ class Parameter :
                     continue
                 p = Parameter.from_map_file_line(line)
                 parameters[p.id] = p
+        return parameters
 
     def __from_res_file_line(self, line) :
         """Assumes line is for the same parameter as stored in self
