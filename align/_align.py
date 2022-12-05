@@ -28,6 +28,10 @@ def construct(det_name : str) :
     exist withing <hps-java>/detector-data/detectors.
     """
     detector_dir = os.path.join(cfg.cfg().javadir, 'detector-data/detectors', det_name)
+
+    if not os.path.isdir(detector_dir) :
+        raise typer.BadParameter(f'{det_name} not in hps-java')
+
     # construct LCDD from compact
     _cmd.run(['java'] + cfg.cfg().javaopts + [
         '-cp', cfg.cfg().jarfile,
@@ -47,9 +51,12 @@ def construct(det_name : str) :
     
 @app.command()
 def tracking(det_name : str, run : int, input_file : str, 
-    method : str = typer.Option('kf',help='type of tracking to do (kf or st)'),
-    out_prefix : str = typer.Option(None,help='prefix to put onto output files'), 
-    new_det : bool = typer.Option(False,help='this is a new detector and so we should construct it first'),
+    method : str = typer.Option('kf',
+        help='type of tracking to do (kf or st)'),
+    out_prefix : str = typer.Option(None,
+        help='prefix to put onto output files'), 
+    new_det : bool = typer.Option(False,
+        help='this is a new detector and so we should construct it first'),
     ) :
     """
     Run tracking in the input detector.
@@ -230,7 +237,7 @@ def apply(pede_res : str, detector : str,
         # deduce source directory and check that it exists
         src_path = os.path.join(cfg.cfg().javadir, 'detector-data', 'detectors', detector)
         if not os.path.isdir(src_path) :
-            raise ValueError(f'Detector {detector} is not in hps-java')
+            raise typer.BadParameter(f'Detector {detector} is not in hps-java')
         
         # deduce iter value, using iter0 if there is no iter suffix
         matches = re.search('.*iter([0-9]*)', detector)
@@ -257,12 +264,12 @@ def apply(pede_res : str, detector : str,
     # now we have bumped or not, so reconstruct detector path and check that it exists
     path = os.path.join(cfg.cfg().javadir, 'detector-data', 'detectors', detector)
     if not os.path.isdir(path) :
-        raise ValueError(f'Detector {detector} is not in hps-java')
+        raise typer.BadParameter(f'Detector {detector} is not in hps-java')
 
     # make sure compact exists
     detdesc = os.path.join(path,'compact.xml')
     if not os.path.isfile(detdesc) :
-        raise ValueError(f'No compact.xml in {path} to apply parameter to.')
+        raise typer.BadParameter(f'Detector {detector} has no compact.xml in {path} to apply parameter to.')
 
     # get list of parameters and their MP values
     parameters = Parameter.parse_pede_res(pede_res, skip_nonfloat=True)
