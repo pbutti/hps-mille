@@ -1,5 +1,9 @@
 """apply deduced alignment parameters to the compact"""
 
+import os
+import re
+import shutil
+
 import typer
 
 from _cfg import cfg
@@ -71,6 +75,7 @@ def apply(pede_res : str, detector : str,
                     f.write(line)
                     continue
 
+                line_edited = False
                 for i in parameters :
                     if str(i) in line :
                         # the parameter with ID i is being set on this line
@@ -92,17 +97,21 @@ def apply(pede_res : str, detector : str,
                         value = post_val[:quote_close]
                         post_val = post_val[quote_close:]
 
-                        op = '+' if parameters[i].val > 0 else '-'
+                        # we flip the sign of the alignment parameter
+                        #  to "undo" the "misalignment"
+                        op = '-' if parameters[i].val > 0 else '+'
                         new_value = f'{value} {op} {abs(parameters[i].val)}'
 
                         if interactive :
                             doit = typer.confirm(f'Update {i} from "{value}" to "{new_value}"?')
                             if doit :
                                 f.write(f'{pre_val}{new_value}{post_val}')
-                            else :
-                                f.write(line)
+                                line_edited = True
                         else :
                             f.write(f'{pre_val}{new_value}{post_val}')
+                
+                if not line_edited :
+                    f.write(line)
 
     if (interactive and typer.confirm('Delete original copy?')) or cleanup :
         os.remove(original_cp)
