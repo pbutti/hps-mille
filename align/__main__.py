@@ -8,10 +8,10 @@ Calls into this module.
 import typer
 
 from _cli import app
-import _construct
-import _tracking
-import _apply
-import _millepede
+import construct
+import tracking
+import apply
+import millepede
 
 @app.command()
 def config() :

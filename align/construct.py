@@ -36,3 +36,5 @@ def construct(det_name : str) :
     _cmd.run(['mvn'] + cfg.cfg().mvnopts, cwd=os.path.join(cfg.cfg().javadir,'detector-data'))
     _cmd.run(['mvn'] + cfg.cfg().mvnopts, cwd=os.path.join(cfg.cfg().javadir,'distribution'))
     
+if __name__ == '__main__' :
+    app()

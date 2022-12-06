@@ -49,3 +49,6 @@ def tracking(det_name : str, run : int, input_file : str,
       steering,
       '-i', input_file
       ])
+
+if __name__ == '__main__' :
+    app()

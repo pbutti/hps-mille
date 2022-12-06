@@ -457,3 +457,6 @@ def millepede(
             shutil.copy2(f,os.path.join(out_dir,prefix+f'millepede.{ext}'))
 
     return
+    
+if __name__ == '__main__' :
+    app()

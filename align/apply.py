@@ -106,3 +106,6 @@ def apply(pede_res : str, detector : str,
 
     if (interactive and typer.confirm('Delete original copy?')) or cleanup :
         os.remove(original_cp)
+
+if __name__ == '__main__' :
+    app()
