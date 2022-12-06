@@ -8,6 +8,7 @@ Calls into this module.
 import typer
 
 from _cli import app
+from _cfg import cfg
 import construct
 import tracking
 import apply

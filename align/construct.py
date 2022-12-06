@@ -1,5 +1,7 @@
 """Construct a detector LCDD from the compact.xml"""
 
+import os
+
 import typer
 
 import _cmd

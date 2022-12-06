@@ -11,18 +11,13 @@ def tracking(det_name : str, run : int, input_file : str,
     method : str = typer.Option('kf',
         help='type of tracking to do (kf or st)'),
     out_prefix : str = typer.Option(None,
-        help='prefix to put onto output files'), 
-    new_det : bool = typer.Option(False,
-        help='this is a new detector and so we should construct it first'),
+        help='prefix to put onto output files')
     ) :
     """
     Run tracking in the input detector.
 
     The detector LCDD is assumed to already be constructed.
     """
-
-    if new_det :
-        construct(det_name)
 
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet

@@ -57,9 +57,7 @@ class cfg :
         
         self.jarfile = jarfile
 
-        if self.container :
-            javaopts.extend(['-Dorg.lcsim.cacheDir=/externals'])
-        else :
+        if not self.container :
             if gbldir is None :
                 # deduce GBL location
                 print('WARN: Unable to deduce gbldir. Set with cfg.set_gbldir before attempting to run')
