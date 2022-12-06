@@ -8,9 +8,10 @@ import typer
 
 from _cfg import cfg
 from _parameter import Parameter
-from _cli import app
+from _cli import app, typer_unpacker
 
 @app.command()
+@typer_unpacker
 def apply(pede_res : str, detector : str,
         bump : bool = typer.Option(True,
             help='Bump detector iteraction number and create a new copy?'),

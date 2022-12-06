@@ -44,8 +44,10 @@ def iteration(detector : str, input_file : str,
 
     construct.construct(detector)
     tracking.tracking(detector, run, input_file, out_dir = od, method = 'kf')
-    pede.pede(f'{od}/millepede.bin', to_float = to_float, prefix = 'no-constraint-', out_dir = od)
-    apply.apply(f'{od}/no-constraint-millepede.res', detector, bump = True, force = False, interactive = False)
+    pede.pede([od], to_float = to_float, 
+        prefix = 'no-constraint-', out_dir = od)
+    apply.apply(f'{od}/no-constraint-millepede.res', detector, 
+        bump = True, force = False, interactive = False)
 
 @app.callback()
 def main(config : str =  typer.Option(None,help='JSON config file')):

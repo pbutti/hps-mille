@@ -6,9 +6,10 @@ import typer
 
 import _cmd
 from _cfg import cfg
-from _cli import app
+from _cli import app, typer_unpacker
 
 @app.command()
+@typer_unpacker
 def construct(det_name : str) :
     """
     Construct a detector LCDD from the compact.xml

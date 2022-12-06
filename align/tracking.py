@@ -6,9 +6,10 @@ import typer
 
 import _cmd
 from _cfg import cfg
-from _cli import app
+from _cli import app, typer_unpacker
 
 @app.command()
+@typer_unpacker
 def tracking(det_name : str, run : int, input_file : str, 
     method : str = typer.Option('kf',
         help='type of tracking to do (kf or st)'),
@@ -22,12 +23,10 @@ def tracking(det_name : str, run : int, input_file : str,
 
     The detector LCDD is assumed to already be constructed.
     """
-
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet
     os.makedirs(out_dir, exist_ok=True)
-    full_prefix = os.path.join(str(out_dir),str(prefix))
-
+    full_prefix = os.path.join(out_dir,prefix)
     steering = None
     if method == 'kf' :
         steering = cfg.cfg().kf_steer

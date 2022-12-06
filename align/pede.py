@@ -9,7 +9,7 @@ import typer
 import _cmd
 from _cfg import cfg
 from _parameter import Parameter
-from _cli import app
+from _cli import app, typer_unpacker
 
 def getBeamspotConstraints(parMap):
     s = '\n!Beamspot constraints\n'
@@ -335,6 +335,7 @@ def getMeasurementD0(parMap):
 
 
 @app.command()
+@typer_unpacker
 def pede(
         input_file : List[str],
         to_float : List[str] = typer.Option(..., help='parameters to float'),
@@ -366,7 +367,7 @@ def pede(
 
     # update parameters from previous fit
     if previous_fit is not None :
-        Parameter.parse_pede_res(previous_fit, destination = previous_fit, skip_nonfloat = False)
+        Parameter.parse_pede_res(previous_fit, destination = parameters, skip_nonfloat = False)
 
     # define which parameters are floating
     floating = []
@@ -399,6 +400,8 @@ def pede(
         #  recursively entering subdiretories and including
         #  all '*.bin' files found
         for ipf in input_file :
+            print(ipf)
+            typer.confirm('...',abort=True)
             ipf = os.path.realpath(ipf)
             if os.path.isfile(ipf) and ipf.endswith('.bin') :
                 psf.write(ipf+'\n')
