@@ -26,7 +26,7 @@ def tracking(det_name : str, run : int, input_file : str,
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet
     os.makedirs(out_dir, exist_ok=True)
-    full_prefix = os.path.join(out_dir,prefix)
+    full_prefix = os.path.join(str(out_dir),str(prefix))
 
     steering = None
     if method == 'kf' :
