@@ -335,7 +335,7 @@ def getMeasurementD0(parMap):
 
 
 @app.command()
-def millepede(
+def pede(
         input_file : List[str],
         to_float : List[str] = typer.Option(..., help='parameters to float'),
         out_dir : str = typer.Option(os.getcwd(), help='directory to save output to'),
@@ -414,7 +414,7 @@ def millepede(
             psf.write('!Constraint file\n')
             psf.write(constraint_file+'\n')
 
-        # parameters that can float
+        # list parameters
         psf.write('\nParameter\n')
         for i, p in parameters.items() : 
             psf.write(p.pede_format() + '\n')
@@ -450,6 +450,14 @@ def millepede(
     if subito :
         pede_cmd.append('-s')
     _cmd.run(pede_cmd, cwd=cfg.cfg().scratch)
+
+    # print parameters that were floated so user can see results
+    Parameter.parse_pede_res(os.path.join(cfg.cfg().scratch,'millepede.res'),
+        destination=parameters, skip_nonfloat=True)
+    print('Deduced Parameters')
+    for i, p in parameters.items() :
+        if p.active :
+            print(f'  {i}  {p.val:.6e} +- {p.error:.2e} mm')
 
     # move output to destination directory
     for ext in ['res','eve','log','his'] :

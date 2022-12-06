@@ -12,7 +12,7 @@ from _cfg import cfg
 import construct
 import tracking
 import apply
-import millepede
+import pede
 
 @app.command()
 def config() :
