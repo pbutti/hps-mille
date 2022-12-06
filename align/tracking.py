@@ -1,5 +1,7 @@
 """run tracking in hps-java on the input detector"""
 
+import os
+
 import typer
 
 import _cmd
@@ -10,7 +12,9 @@ from _cli import app
 def tracking(det_name : str, run : int, input_file : str, 
     method : str = typer.Option('kf',
         help='type of tracking to do (kf or st)'),
-    out_prefix : str = typer.Option(None,
+    out_dir : str = typer.Option(os.getcwd(),
+        help='directory in which to write output files'),
+    prefix : str = typer.Option('',
         help='prefix to put onto output files')
     ) :
     """
@@ -21,10 +25,8 @@ def tracking(det_name : str, run : int, input_file : str,
 
     # allow output file prefix to define an output directory
     #   and create it if it doesn't exist yet
-    import os
-    d = os.path.dirname(out_prefix)
-    if d != '' :
-        os.makedirs(d, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
+    full_prefix = os.path.join(out_dir,prefix)
 
     steering = None
     if method == 'kf' :
@@ -40,7 +42,7 @@ def tracking(det_name : str, run : int, input_file : str,
       '-jar', cfg.cfg().jarfile,
       '-R', str(run), 
       '-d', det_name,
-      f'-DoutputFile={out_prefix}',
+      f'-DoutputFile={full_prefix}',
       steering,
       '-i', input_file
       ])
