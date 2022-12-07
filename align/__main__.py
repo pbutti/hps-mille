@@ -47,9 +47,12 @@ def iteration(detector : str, input_file : str,
     if interactive and typer.confirm(f'Construct detector {detector}?') :
         construct.construct(detector)
     tracking.tracking(detector, run, input_file, out_dir = od, method = 'kf')
+    if interactive :
+        typer.confirm('Run the pede minimizer on the produced tracks?', abort=True)
     pede.pede([od], to_float = to_float, 
         prefix = 'no-constraint-', out_dir = od)
-    typer.confirm('Apply these deduced parameters by making a new iter?', abort=True)
+    if interactive :
+        typer.confirm('Apply these deduced parameters by making a new iter?', abort=True)
     apply.apply(f'{od}/no-constraint-millepede.res', detector, 
         bump = True, force = False, interactive = interactive)
 

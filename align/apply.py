@@ -18,9 +18,7 @@ def apply(pede_res : str, detector : str,
         interactive : bool = typer.Option(False,
             help='Ask before applying any parameters'),
         force : bool = typer.Option(False,
-            help='Force re-creation even if new iteraction already exists'),
-        cleanup : bool = typer.Option(False,
-            help='Remove original copy of compact.xml after update.')
+            help='Force re-creation even if new iteraction already exists')
         ) :
     """
     Apply the deduce alignment parameters from pede to the detector
@@ -35,11 +33,20 @@ def apply(pede_res : str, detector : str,
         # deduce iter value, using iter0 if there is no iter suffix
         matches = re.search('.*iter([0-9]*)', detector)
         if matches is None :
-            detector = detector + '_iter0'
+            if interactive :
+                N = typer.prompt('No "_iterN" suffix on detector name. What should the first N be? (negative to abort)')
+                if not N.isnumeric() :
+                    typer.echo('Provided N not a number.')
+                    typer.Abort()
+                N = int(N)
+                if N < 0 :
+                    typer.Exit()
+            else :
+                N = 0
+            detector = detector + '_iter' + str(N)
         else :
             i = int(matches.group(1))
             detector = detector.replace(f'_iter{i}',f'_iter{i+1}')
-        print(detector)
 
         # deduce destination path, and make sure it does not exist
         dest_path = os.path.join(cfg.cfg().javadir, 'detector-data', 'detectors', detector)
@@ -114,7 +121,10 @@ def apply(pede_res : str, detector : str,
                 if not line_edited :
                     f.write(line)
 
-    if (interactive and typer.confirm('Delete original copy?')) or cleanup :
+    # if interactive, just ask user otherwise, delete original copy if we bump'ed
+    #   because if we bumped then the original copy is available in the previous
+    #   iteration of the detector
+    if (interactive and typer.confirm('Delete original copy?')) or bump :
         os.remove(original_cp)
 
 if __name__ == '__main__' :
