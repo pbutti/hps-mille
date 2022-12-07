@@ -15,6 +15,7 @@ def typer_unpacker(f: Callable):
 
     https://github.com/tiangolo/typer/issues/279#issuecomment-893667754
     """
+    @functools.wraps(f)
     def wrapper(*args, **kwargs):
         # Get the default function argument that aren't passed in kwargs via the
         # inspect module: https://stackoverflow.com/a/12627202
