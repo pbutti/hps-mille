@@ -44,7 +44,7 @@ def iteration(detector : str, input_file : str,
 
     od = os.path.join(str(out_dir),detector)
 
-    if interactive and typer.confirm(f'Construct detector {detector}?') :
+    if not interactive or typer.confirm(f'Construct detector {detector}?') :
         construct.construct(detector)
     tracking.tracking(detector, run, input_file, out_dir = od, method = 'kf')
     if interactive :
