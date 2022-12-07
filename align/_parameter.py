@@ -133,3 +133,20 @@ class Parameter :
         """Print this parameter as it should appear in the pede steering file"""
         return f'{self.id} {self.val} {0.0 if self.active else -1.0} {self.name}'
 
+    def __repr__(self) :
+        """Representation of this parameter"""
+        return str(self.id)
+
+    def __str__(self) :
+        """Human printing of this parameter"""
+        s = repr(self)
+        if self.trans_rot == 1 :
+            # translation
+            #   stored as mm, print as um
+            s += f' {self.val*1000} +- {self.error*1000} um'
+        else :
+            # rotation
+            #   stored as rad, print as mrad
+            s += f' {self.val*1000} +- {self.error*1000} mrad'
+        return s
+
