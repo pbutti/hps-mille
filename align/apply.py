@@ -117,6 +117,9 @@ def apply(pede_res : str, detector : str,
                                 line_edited = True
                         else :
                             f.write(f'{pre_val}{new_value}{post_val}')
+                            line_edited = True
+
+                        break
                 
                 if not line_edited :
                     f.write(line)
