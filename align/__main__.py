@@ -31,9 +31,11 @@ def iteration(detector : str, input_file : str,
     to_float : List[str] = typer.Option(...,
       help='parameters to float during pede minimization'),
     run : int = typer.Option(1194550,
-      help='run number to use during tracking, default is magic "perfect" 2019 MC run'),
+      help='run number to use during tracking, default is for "perfect" 2019 MC run'),
     out_dir : str = typer.Option(os.getcwd(),
-      help='base output directory to write output files to')
+      help='base output directory to write output files to'),
+    interactive : bool = typer.Option(False,
+      help='ask for confirmation about stuff before progressing')
     ) :
     """
     Do a full iteration of construct -> tracking -> alignment -> application
@@ -42,12 +44,14 @@ def iteration(detector : str, input_file : str,
 
     od = os.path.join(str(out_dir),detector)
 
-    construct.construct(detector)
+    if interactive and typer.confirm(f'Construct detector {detector}?') :
+        construct.construct(detector)
     tracking.tracking(detector, run, input_file, out_dir = od, method = 'kf')
     pede.pede([od], to_float = to_float, 
         prefix = 'no-constraint-', out_dir = od)
+    typer.confirm('Apply these deduced parameters by making a new iter?', abort=True)
     apply.apply(f'{od}/no-constraint-millepede.res', detector, 
-        bump = True, force = False, interactive = False)
+        bump = True, force = False, interactive = interactive)
 
 @app.callback()
 def main(config : str =  typer.Option(None,help='JSON config file')):

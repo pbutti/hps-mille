@@ -397,11 +397,9 @@ def pede(
         # write out input mille binary files
         psf.write('CFiles\n')
         # scan each entry provided on command line,
-        #  recursively entering subdiretories and including
+        #  recursively entering subdirectories and including
         #  all '*.bin' files found
         for ipf in input_file :
-            print(ipf)
-            typer.confirm('...',abort=True)
             ipf = os.path.realpath(ipf)
             if os.path.isfile(ipf) and ipf.endswith('.bin') :
                 psf.write(ipf+'\n')
