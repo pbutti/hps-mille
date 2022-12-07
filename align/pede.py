@@ -458,7 +458,7 @@ def pede(
     print('Deduced Parameters')
     for i, p in parameters.items() :
         if p.active :
-            print(f'  {i}  {p.val:.6e} +- {p.error:.2e} mm')
+            print(f'  {i}  {p.val*1000:.6f} +- {p.error*1000:.6f} um')
 
     # move output to destination directory
     for ext in ['res','eve','log','his'] :
