@@ -105,10 +105,7 @@ def apply(pede_res : str, detector : str,
                         value = post_val[:quote_close]
                         post_val = post_val[quote_close:]
 
-                        # we flip the sign of the alignment parameter
-                        #  to "undo" the "misalignment"
-                        op = '-' if parameters[i].val > 0 else '+'
-                        new_value = f'{value} {op} {abs(parameters[i].val)}'
+                        new_value = f'{value} {parameters[i].compact_value()}'
 
                         if interactive :
                             doit = typer.confirm(f'Update {i} from "{value}" to "{new_value}"?')

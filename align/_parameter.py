@@ -133,6 +133,21 @@ class Parameter :
         """Print this parameter as it should appear in the pede steering file"""
         return f'{self.id} {self.val} {0.0 if self.active else -1.0} {self.name}'
 
+    def compact_value(self) :
+        """Print the value of this parameter as it should be inserted into the compact
+
+        **including** the operator (either + or -)
+
+        This is where we handle whether the sign flips (translations) or doesn't (rotations)
+        """
+        # rotation, same sign as value
+        op = '+' if self.val > 0 else '-'
+        if self.trans_rot == 1 :
+            # translation, flip operator
+            op = '-' if self.val > 0 else '+'
+
+        return f'{op} {abs(self.val)}'
+
     def __repr__(self) :
         """Representation of this parameter"""
         return str(self.id)
