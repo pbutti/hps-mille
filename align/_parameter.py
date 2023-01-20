@@ -1,5 +1,7 @@
 """An alignment parameter representation"""
 
+import re
+
 class Parameter :
     """Representation of a single alignment parameter
 
@@ -27,6 +29,9 @@ class Parameter :
     active : bool
         true if parameter is floating, false otherwise
     """
+
+    idn_str_pattern = re.compile('^[12][12][123][0-9][0-9]$')
+
     def __init__(self, idn, name, half, trans_rot, direction, mp_layer_id) :
         self.id = int(idn)
         self.name = name
@@ -50,6 +55,38 @@ class Parameter :
         order as a line in the sensor map file
         """
         return Parameter(*line.split())
+
+    def from_idn(idn) :
+        """Deduce the categorical flags from the ID number
+        
+        Each ID number is five digis.
+        In regex terms...
+
+        [12][12][123][0-9][0-9]
+         |             |- last two digis are sensor ID number 
+         |        |------ direction 1==u, 2==v, 3==w
+         |    |---------- transformation 1==translation, 2==rotation
+         |--------------- detector half 1==top, 2==bottom
+
+        So we just need to break it down by modulo and integer
+        division /OR/ do some str conversion nonsense in python.
+        """
+
+        idn = str(idn)
+        if len(idn) != 5 :
+            raise ValueError(f'Bad ID Number: {idn} is not five digis')
+        
+        if not Parameter.idn_str_pattern.match(idn) :
+            raise ValueError(f'Bad ID Number: {idn} does not match the ID pattern')
+
+        # idn is good pattern, procede with str hackiness
+        digits = [*idn] # digits is list of characters in str
+        # convert digits into flag values
+        half = int(digits[0])
+        trans_rot = int(digits[1])
+        direction = int(digits[2])
+        mp_layer_id = int(digits[3]+digits[4])
+        return Parameter(int(idn), idn, half, trans_rot, direction, mp_layer_id)
 
     def parse_map_file(map_filepath) :
         """load the entire parameter set from a map file
@@ -118,7 +155,7 @@ class Parameter :
                     continue
                 idn = int(line.split()[0])
                 if destination is None :
-                    p = Parameter(idn,'UNKNOWN',-1,-1,-1,-1)
+                    p = Parameter.from_idn(idn)
                     p.__from_res_file_line(line)
                     if p.active or not skip_nonfloat :
                         parameters[p.id] = p
