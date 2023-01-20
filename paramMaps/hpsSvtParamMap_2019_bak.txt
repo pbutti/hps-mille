@@ -107,18 +107,18 @@ MilleParameter                              Sensor          half   trans./rot.  
          22107        module_L4b_halfmodule_stereo             2             2             1             7
          22207        module_L4b_halfmodule_stereo             2             2             2             7
          22307        module_L4b_halfmodule_stereo             2             2             3             7
-         11107         module_L4t_halfmodule_axial             1             1             1             7
-         11207         module_L4t_halfmodule_axial             1             1             2             7
-         11307         module_L4t_halfmodule_axial             1             1             3             7
-         12107         module_L4t_halfmodule_axial             1             2             1             7
-         12207         module_L4t_halfmodule_axial             1             2             2             7
-         12307         module_L4t_halfmodule_axial             1             2             3             7
-         11108        module_L4t_halfmodule_stereo             1             1             1             8
-         11208        module_L4t_halfmodule_stereo             1             1             2             8
-         11308        module_L4t_halfmodule_stereo             1             1             3             8
-         12108        module_L4t_halfmodule_stereo             1             2             1             8
-         12208        module_L4t_halfmodule_stereo             1             2             2             8
-         12308        module_L4t_halfmodule_stereo             1             2             3             8
+         11108         module_L4t_halfmodule_axial             1             1             1             7
+         11208         module_L4t_halfmodule_axial             1             1             2             7
+         11308         module_L4t_halfmodule_axial             1             1             3             7
+         12108         module_L4t_halfmodule_axial             1             2             1             7
+         12208         module_L4t_halfmodule_axial             1             2             2             7
+         12308         module_L4t_halfmodule_axial             1             2             3             7
+         11107        module_L4t_halfmodule_stereo             1             1             1             8
+         11207        module_L4t_halfmodule_stereo             1             1             2             8
+         11307        module_L4t_halfmodule_stereo             1             1             3             8
+         12107        module_L4t_halfmodule_stereo             1             2             1             8
+         12207        module_L4t_halfmodule_stereo             1             2             2             8
+         12307        module_L4t_halfmodule_stereo             1             2             3             8
          21110    module_L5b_halfmodule_axial_hole             2             1             1            10
          21210    module_L5b_halfmodule_axial_hole             2             1             2            10
          21310    module_L5b_halfmodule_axial_hole             2             1             3            10

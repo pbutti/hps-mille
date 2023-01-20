@@ -1,6 +1,7 @@
 import argparse, subprocess, sys, os.path, re
 
 paramMapFile = 'hpsSvtParamMap_2019.txt'
+#paramMapFile  = 'hpsSvtParamMap_2019_com.txt'
 global paramMap
 paramMap= {}
 beamspotAxialId = 99
@@ -37,7 +38,9 @@ class Parameter:
         self.active = active
         self.error = error
         self.change = change
+                
     @classmethod
+
     def fromstr(cls,s):
         i = int(s.split()[0])
         val = float(s.split()[1])

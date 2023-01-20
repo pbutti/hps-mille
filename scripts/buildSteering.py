@@ -3,15 +3,23 @@
 import sys, os, utils, math
 
 survey_meas_tu = 0.05
+survey_meas_tw = 0.100
 
 
 def getSurveyMeasurements(parMap):
+    print("Adding survey constraints")
+
     s = '\n!Survey constraints tu\n'
     for p, name in utils.paramMap.iteritems():
         if utils.getModuleNrFromDeName(name) == 0: continue
         if utils.getDir(p) == 'u' and utils.getType(p) == 't':
            s += '\nMeasurement %.1f %.3f\n' % (0.0, survey_meas_tu)
            s += '%s %.1f\n' % (p, 1.0)
+           print(s)
+        if utils.getDir(p) == 'w' and utils.getType(p) == 't':
+            s += '\nMeasurement %.1f %.3f\n' % (0.0, survey_meas_tw)
+            s += '%s %.1f\n' % (p, 1.0) 
+            print(s)
     return s
 
 def getBeamspotConstraints(parMap):

@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import argparse, subprocess, sys, os.path, re
 import glob
-from utils import Parameter, printResults, getParamsFromModule,getMinimStr, beamspotAxialId, beamspotStereoId,paramMap
+import utils
+from utils import Parameter, printResults, getParamsFromModule,getMinimStr, beamspotAxialId, beamspotStereoId,paramMap, paramMapFile
 import buildSteering
 
 pedeBin = 'MillepedeII/pede'
@@ -12,8 +13,9 @@ def getArgs():
     parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
     parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
     parser.add_argument('-y','--year',dest="year",help="Which detector geometry? (2016 or 2019 [default])",default="2019")
-    parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default=None)
-    parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
+    parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default="./MPII_results_")
+    parser.add_argument('-z','--inDir',help="Folders containing the millepede.bin files")
+    parser.add_argument('-t','--inType',dest="inType",help="Type of bin files.Comma separated list",default="")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
     parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
@@ -25,8 +27,10 @@ def getArgs():
     parser.add_argument('--SC', action='store_true',help='Survey constraint')
     parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
     parser.add_argument('--PC', action='store_true',help='Momentum constraint')
+    parser.add_argument('-r','--regEx',dest="regEx",help="regEx to find bin files",default="")
     parser.add_argument('--slot', action='store_true',help='onlySlot')
     parser.add_argument('--HC', dest="HierConstr", help="Hierarchical constraint",default="")
+    parser.add_argument('--com', dest="com",help="Use center of mass scheme",action="store_true",default=False)
     args = parser.parse_args()
 
     print args
@@ -65,13 +69,46 @@ def getDefaultParams(beamspot=False,year="2019"):
                     mpId = str(h) + str(t) + str(d) + str(module)
                     p = Parameter(int(mpId),0.0,-1.0)
                     pars.append(p)
-                
+                    
                 #Add the support
                 r = [80,90]
                 for support in r:
                     mpId = str(h)+str(t) +str(d) + str(support)
                     p = Parameter(int(mpId),0.0,-1.0)
                     pars.append(p)
+                    
+                if "com" in utils.paramMapFile:
+                
+                    #Add the double sensors
+                    r = range(71,77)
+                    for doublesensor in r:
+                        mpId = str(h) + str(t) + str(d) + str(doublesensor)
+                        p = Parameter(int(mpId),0.0,-1.0)
+                        pars.append(p)
+                
+                    #Add the volumes
+                    r = [91]
+                    for volume in r:
+                        mpId = str(h)+str(t) +str(d) + str(volume)
+                        p = Parameter(int(mpId),0.0,-1.0)
+                        pars.append(p)
+
+                    #Add the tracker params
+            
+                    p = Parameter(11192,0.0,-1.0)
+                    pars.append(p)
+                    p = Parameter(11292,0.0,-1.0)
+                    pars.append(p)
+                    p = Parameter(11392,0.0,-1.0)
+                    pars.append(p)
+                    p = Parameter(12192,0.0,-1.0)
+                    pars.append(p)
+                    p = Parameter(12292,0.0,-1.0)
+                    pars.append(p)
+                    p = Parameter(12392,0.0,-1.0)
+                    pars.append(p)
+    
+
     
     return pars
 
@@ -91,7 +128,7 @@ def getParams(parfilename):
     return pars
 
 
-def updateFloatParams(pars,floats):
+def updateFloatParams(pars,floats,fixedPreSigma = 0):
     print 'There are ',len(floats),' parameters to float'    
     for i in floats:
         pfound = None
@@ -103,7 +140,15 @@ def updateFloatParams(pars,floats):
             sys.exit(1)
         if args.debug:
             print 'Float ', p.i
-        pfound.active = 0
+        
+        print("PF::DEBUG",str(pfound.i))
+        if str(pfound.i)[1]   == "1":
+            print("Translation",pfound.i)
+            pfound.active = fixedPreSigma
+            
+        else: 
+            print("Rotation",pfound.i) 
+            pfound.active = 0.002  #2 mrad
     return
 
 
@@ -156,8 +201,10 @@ def buildSteerFile(name,args,pars,minimStr):
             ilist.close()
         
         if (args.inDir != None and len(args.inDir)>0):
+            
+            
             #The inputFolder with the files
-            re="all_millepede_ST.bin"
+            re="*chi2*"
             if (args.BSC):
                 re+="BSC_"
             if (args.slot):
@@ -165,13 +212,38 @@ def buildSteerFile(name,args,pars,minimStr):
             if (args.PC):
                 #re+="*_PC_*"
                 re="*PC*"
+            
+            if(args.regEx != ""):
+                re = args.regEx
 
+            print(args.inDir)
+            
+            if "," in args.inDir:
+                listDirs = (args.inDir).split(",")
+                                                
+                for i in range(0,len(listDirs)):
+                    inDir = listDirs[i]
+                    
+                    if (len(args.inType) > 0):
+                        listTypes = (args.inType).split(",")
+                        re = listTypes[i]
+                    
+                        print("Glob:",inDir+"*"+re+"*.bin")
+                    binFiles = glob.glob(inDir+"*"+re+"*.bin")
+                    
+                    print("Found :", len(binFiles), "files in ", inDir+"*"+re+"*.bin")
+                    for ifile in binFiles:
+                        f.write(ifile.strip() +"\n")
 
-            print "Glob:",args.inDir+"/outputFiles/*/*"+re
-            binFiles = glob.glob(args.inDir+"/outputFiles/*/*"+re)
-        
-            for ifile in binFiles:
-                f.write(ifile.strip() +"\n")
+            else:
+                print("Single input folder")
+                print "Glob:",args.inDir+"/*"+re+"*.bin"
+                binFiles = glob.glob(args.inDir+"*"+re+"*.bin")
+                for ifile in binFiles:
+                    f.write(ifile.strip() +"\n")
+            
+
+            #sys.exit(1)
         
         #The external constraint file
         if (constraintFile!=""):
@@ -183,13 +255,16 @@ def buildSteerFile(name,args,pars,minimStr):
         #The floating parameters
         f.write("\nParameter\n")
         for p in pars:
+            
+            
+            print("Adding parameter",p.toString())
             #if p.isActive():
             #    print p.i
             f.write(p.toString() + "\n")
             
         #Apply survey constants
         if surveyConstraints:
-            f.write(buildSteering.getSurveyMeasurements(paramMap))
+            f.write(buildSteering.getSurveyMeasurements(utils.paramMap))
             f.write("\n\n")
         
         #Apply beamspotConstraint (This I think is not correct)
@@ -245,10 +320,18 @@ def main(args):
     # initialize all the parameters into a list
     pars = getDefaultParams(args.beamspot,args.year)
     print 'Found ', len(pars), 'default parameters'
+
+    if args.com:
+        utils.paramMapFile = './paramMaps/hpsSvtParamMap_2019_com.txt'
+
     if args.debug:
         for p in pars:
             print p.toString()
     
+
+
+    print("paramMapFile",utils.paramMapFile)
+
     # check if there is a supplied parameter file.
     # this could be a result file from a previous fit
     print "Parameters:", args.parameters
@@ -276,13 +359,15 @@ def main(args):
     
     if args.float is not None:
         floatingPars.extend(args.float)
+        
 
-    updateFloatParams(pars,floatingPars)
+    #use a presigma of 50um
+    updateFloatParams(pars,floatingPars,0.05)
 
     print 'List of floating parameters:'
     nfloats = 0
     for p in pars:
-        if p.active==0:
+        if p.active>=0:
             print p.toString()
             nfloats=nfloats+1
 

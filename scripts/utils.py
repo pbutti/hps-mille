@@ -1,6 +1,8 @@
 import argparse, subprocess, sys, os.path, re
 
-paramMapFile = './paramMaps/hpsSvtParamMap_2019.txt'
+#paramMapFile = './paramMaps/hpsSvtParamMap_2019.txt'
+paramMapFile = './paramMaps/hpsSvtParamMap_2019_com.txt'
+
 global paramMap
 paramMap= {}
 beamspotAxialId = 99
@@ -180,11 +182,27 @@ def getModuleNrFromDeName(deName):
     m = re.search("module_L(\d)\S_(half)", deName)
     #print "PF::getModuleNrFromDeName=", deName
     if m==None:
-        m = re.search("module_L(\d)\S_(full)",deName)
         #print "PF::getModuleNrFromDeName for full module", deName
+        m = re.search("module_L(\d)\S_(full)",deName)
         if m!=None:
             l = m.group(1)
             return int(l)
+        else:
+            #check for double sensor
+            #doublesensor_axial_L5_top
+            m = re.search("doublesensor_axial_L(\d)\S",deName)
+            if m!=None:
+#                print(deName)
+                l = m.group(1)
+#                print("Returning::",int(l)) 
+                return int(l)
+            m = re.search("doublesensor_stereo_L(\d)\S",deName)
+            if m!=None:
+#                print(deName)
+                l = m.group(1)
+#                print("Returning::",int(l)) 
+                return int(l)                
+                
     else:
         l = m.group(1)
         return int(l)
@@ -254,6 +272,12 @@ def getParamsFromModule(module):
         print "FOUND Module:",module
         return getParamsFromFullModule(module,m)
 
+    #This tells if it's a double sensor
+    m = re.search("D([5-7])([AS]?)([tb])_([tr])([uvw]$)", module)
+    if (m != None):
+        print "FOUND Module:",module
+        return getParamsFromDoubleSensor(module,m)
+    
     #This tells if it's a support
     m = re.search("S([fb])([tb])_([tr])([uvw]$)", module)
     if (m != None):
@@ -309,6 +333,43 @@ def getParamsFromFullModule(module,m):
         #print layer,half,typ,direction
         if loopLayer == layer and loophalf == half and loopTyp == typ and loopDirection == direction:
             params.append(k)
+    return params
+
+
+def getParamsFromDoubleSensor(module,m):
+    params = []
+    print m.groups()
+
+    layer = int(m.group(1))
+    axialOrStereo = m.group(2)
+    half  = m.group(3)
+    typ   = m.group(4)
+    direction = m.group(5)
+
+    if (layer < 5):
+        print("ERROR::Double sensors are only in the back of the detector")
+    
+    for k,v in paramMap.iteritems():
+        #Skip whatever is not double sensor
+#        print(v)
+        if "doublesensor" not in v:
+            continue
+        #print("Checking", k)
+        loopLayer     = getModuleNrFromDeName(v)
+        loophalf      = getHalf(k)
+        loopTyp       = getType(k)
+        loopDirection = getDir(k)
+        #print("Loop",loopLayer,loophalf,loopTyp,loopDirection)
+        #print("target",layer,half,typ,direction)
+        if loopLayer == layer and loophalf == half and loopTyp == typ and loopDirection == direction:
+            isAxial = "A"
+            if ("stereo" in v):
+                isAxial = "S"
+            
+            #print("Candidate",loopLayer,isAxial,loophalf,loopTyp,loopDirection)
+            #print("target",layer,axialOrStereo,half,typ,direction)
+            if (isAxial == axialOrStereo):
+                params.append(k)
     return params
             
             

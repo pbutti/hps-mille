@@ -133,6 +133,7 @@ def getArgs():
     parser.add_argument("-r","--residualfile",help="Input residual file",default="/nfs/slac/g/hps2/pbutti/alignment/hps-mille/TEST_COM/millepede.res")
     parser.add_argument("-d","--debug",help="Activate Debug",action="store_true",default=False)
     parser.add_argument("-o","--output",help="The residuals to be parsed from hps-java",default="./mpII_com_residuals.res")
+    parser.add_argument("-j","--json",help="The json file",default="./AlignmentTree.json")
     args = parser.parse_args()
     print(args)
     return args
@@ -146,7 +147,7 @@ def main():
     residualFile = args.residualfile
     print("Parsing::",residualFile)
     
-    dc = DerivativeConverter("/nfs/slac/g/hps2/pbutti/alignment/hps-mille/paramMaps/AlignmentTree.json",args.debug)
+    dc = DerivativeConverter(args.json,args.debug)
         
     dc.LoadResults(residualFile)
 

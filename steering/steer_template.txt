@@ -133,8 +133,9 @@ printrecord -1 -1
 !chiscut 1000. 200.
 chiscut 30. 6.
 outlierdownweighting 4
-method inversion 10 1.
-!method diagonalization 6 1.
+!method inversion 10 1.
+method diagonalization 10 1.
+skipemptycons
 
 histprint
 

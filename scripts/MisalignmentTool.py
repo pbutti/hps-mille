@@ -1,11 +1,19 @@
 from DerivativeConverter import DerivativeConverter
 import numpy as np
+import argparse
 
+def getArgs():
+    parser = argparse.ArgumentParser(description="MPII misalignment creator")
+    parser.add_argument("-j","--json",help="The json file",default="./AlignmentTree.json")
+    parser.add_argument("-i","--input",help="Input misalignment",default="")
+    args = parser.parse_args()
+    print(args)
+    return args
 
 def main():
     print("Misalignment Tool")
-
-    dc = DerivativeConverter("/nfs/slac/g/hps2/pbutti/alignment/hps-mille/paramMaps/AlignmentTree.json",True)
+    args = getArgs()
+    dc = DerivativeConverter(args.json,True)
     
     misfile = open("misalignmentFile.txt","w")
     misfile.write(" Parameter ! Generated misalignments\n")
@@ -25,10 +33,108 @@ def main():
     #                         [0.0,0.0,0.4,0.000,0.000,0.000])
     
     
-    # UChannel Rot Rv 0.5mrad
-    dc.generateMisalignments("UChannelL14_Top_AV",
+    # UChannel Rot Rv 2mrad
+    #dc.generateMisalignments("UChannelL57_Top_AV",
+    #                         misfile,
+    #                         [0.1,0.0,0.0,0.0,0.00,0.0])
+    
+
+    #Recover UChannels relative rotations around U -  Recoverable only if rotations are freed
+    
+    #Front 1 mrad
+    #dc.generateMisalignments("UChannelL14_Top_AV",
+                             #misfile,
+                             #[0.0,0.0,0.0,0.001,0.0,0.0])
+
+    #Back -2 mrad
+    #dc.generateMisalignments("UChannelL57_Top_AV",
+                             #misfile,
+                             #[0.0,0.0,0.0,0.-0.002,0.0,0.0])
+
+
+    #2mrad opposite rotations for front and back Rw 
+
+    #Front -5 mrad
+    #dc.generateMisalignments("UChannelL14_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,0.0,0.0,0.0,-0.002])
+
+    #Back 3 mrad
+    #dc.generateMisalignments("UChannelL57_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,0.0,0.-0.000,0.0,0.001])
+    
+    #Tz Checks
+    #dc.generateMisalignments("ModuleL4_Top_AV",
+    #                         misfile,
+    #                         [-0.,0.0,-2,0.0,0.0,0.0])
+
+    #dc.generateMisalignments("ModuleL5_Top_AV",
+    #                         misfile,
+    #                         [-0.,0.0,2,0.0,0.0,0.0])
+
+    
+    #dc.generateMisalignments("ModuleL6_Top_AV",
+    #                         misfile,
+    #                         [-0.,0.0,2,0.0,0.0,0.0])
+    
+    
+    #if (args.input == ""):
+    #    print("ERROR: provide an input json with misalignments")
+        
+    #Back UChannel Opening Angle - 1mrad
+    #dc.generateMisalignments("doublesensor_stereo_L5_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,2,0.0,0.0,0.0])
+
+    #dc.generateMisalignments("doublesensor_stereo_L6_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,-2,0.0,0.0,0.0])
+
+    #dc.generateMisalignments("doublesensor_stereo_L7_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,0,0.0,0.0,0.0])
+
+    
+    dc.generateMisalignments("module_L4t_halfmodule_stereo_sensor0_AV",
                              misfile,
-                             [0.0,0.0,0.0,0.0,0.0005,0.0])
+                             [0.0,0.0, 1.0,0.0,0.0,0.0]) 
+
+    dc.generateMisalignments("doublesensor_stereo_L5_Top_AV",
+                             misfile,
+                             [0.0,0.0,-1.0,0.0,0.0,0.0]) 
+
+    dc.generateMisalignments("doublesensor_stereo_L6_Top_AV",
+                             misfile,
+                             [0.0,0.0, 1.0,0.0,0.0,0.0]) 
+
+
+    #dc.generateMisalignments("UChannelL14_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,2.0,0.0,0.0,0.0]) 
+
+    #dc.generateMisalignments("UChannelL57_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,2.0,0.0,0.0,0.0]) 
+
+    
+
+    #Opening Angle Front
+    #Opening Angle Back
+
+
+    #Tz sensors - stereo only
+    
+    #dc.generateMisalignments("doublesensor_stereo_L6_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,2,0.0,0.0,0.0])
+    
+
+
+    #Rv sensors
+    #Tz modules
+    
+
     
     misfile.close()
     
