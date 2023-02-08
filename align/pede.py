@@ -338,7 +338,11 @@ def getMeasurementD0(parMap):
 @typer_unpacker
 def pede(
         input_file : List[str],
-        to_float : List[str] = typer.Option(..., help='parameters to float'),
+        to_float : List[str] = typer.Option(..., 
+          help="""parameters to float 
+          Special string 'all' means float all parameters and
+          string 'allsensors' means only float parameters for individual sensors
+          """),
         out_dir : str = typer.Option(os.getcwd(), help='directory to save output to'),
         prefix : str = typer.Option('',help='prefix to attach to files'),
         year : int = typer.Option(2019,
@@ -370,12 +374,22 @@ def pede(
         Parameter.parse_pede_res(previous_fit, destination = parameters, skip_nonfloat = False)
 
     # define which parameters are floating
-    floating = []
     for f in to_float :
         idn = None
         if f.isnumeric() :
             # string is a number, assume it is the idn
             idn = int(f)
+        elif f.lower() == 'all' :
+            # all parameters should be floated
+            for p in parameters.values() :
+                p.float()
+            continue
+        elif f.lower() == 'allsensors' :
+            # all parameters for individual sensors should be floated
+            for p in parameters.values() :
+                if p.mp_layer_id < 23 :
+                    p.float()
+            continue
         else:
             # look for sensor name
             for probe_id, p in parameters.items() :
