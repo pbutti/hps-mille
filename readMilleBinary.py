@@ -1,12 +1,12 @@
 #!/usr/bin32/python
-#
+1;95;0c#
 import array
 import sys
 ### read millepede binary file #################
 #   print information (tested with SL4)
 #   for C files
 if len(sys.argv)<2:
-    print 'too few arguments'
+    print ('too few arguments')
 milleBinFile = sys.argv[1]
 Cfiles = 1
 #   or Fortran files
@@ -21,7 +21,7 @@ intfmt = 'i'
 f = open(milleBinFile,"rb")
 #
 # number of records (tracks) to show
-mrec = 20
+mrec = 1000
 # number of records (track) to skip before 
 skiprec = 0
 #
@@ -37,7 +37,7 @@ try:
            
         len=array.array(intfmt)
         len.fromfile(f,1)
-        nr=len[0]/2
+        nr=int(len[0]/2)
         nrec+=1
 
         glder=array.array('f')
@@ -53,7 +53,7 @@ try:
         if (nrec < skiprec): # must be after last fromfile
             continue
 
-        print " === NR ", nrec, nr
+        print (" === NR ", nrec, nr)
 
         i=0
         nh=0
@@ -76,21 +76,21 @@ try:
                jsp=jb
                nsp=int(-glder[jb])
                i+=nsp
-               print ' ### spec. ', nsp, inder[jsp+1:i+1], glder[jsp+1:i+1]
+               print (' ### spec. ', nsp, inder[jsp+1:i+1], glder[jsp+1:i+1])
                continue
             nh+=1           
             if (jb<i):
 # measurement with global derivatives
-               print ' -g- meas. ', nh, inder[jb+1], jb-ja-1, i-jb, glder[ja], glder[jb]
+               print (' -g- meas. ', nh, inder[jb+1], jb-ja-1, i-jb, glder[ja], glder[jb])
             else:
 # measurement without global derivatives
-               print ' -l- meas. ', nh, inder[ja+1], jb-ja-1, i-jb, glder[ja], glder[jb]            
+               print (' -l- meas. ', nh, inder[ja+1], jb-ja-1, i-jb, glder[ja], glder[jb]            )
             if (ja+1<jb):
-               print " local  ",inder[ja+1:jb]
-               print " local  ",glder[ja+1:jb]
+               print (" local  ",inder[ja+1:jb])
+               print (" local  ",glder[ja+1:jb])
             if (jb+1<i+1):
-               print " global ",inder[jb+1:i+1]
-               print " global ",glder[jb+1:i+1]
+               print (" global ",inder[jb+1:i+1])
+               print (" global ",glder[jb+1:i+1])
 
                
 except EOFError:

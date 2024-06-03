@@ -7,7 +7,7 @@ import tempfile
 #Rotations should be flipped apart from Rw, which shouldn't flip. This should be fixed in BuildMillepedeCompact.
 def build(jarfile, compactfile, resfile, doText,doNotFlipRotations):
 
-    print "Clean up..."
+    print( "Clean up...")
     s = "java -cp " + jarfile + " org.hps.svt.alignment.BuildMillepedeCompact -c " + compactfile + " " + resfile
 
     if doText:
@@ -24,7 +24,7 @@ def build(jarfile, compactfile, resfile, doText,doNotFlipRotations):
 
 def main(args):
 
-    print "just GO"
+    print( "just GO")
 
     build(args.jarfile,args.compactfile,args.resfile,args.t,args.f)
 
@@ -35,7 +35,7 @@ def main(args):
     name = "compact_" + basename.split(".res")[0] + ".xml"
     #This is the default name 
     filename = "compact_new.xml"
-    outf     = open(name,"wb")
+    outf     = open(name,"w")
     for line in open(filename):
         line = line.rstrip()
         
@@ -57,6 +57,6 @@ if __name__ == "__main__":
     parser.add_argument('-t', action='store_true', help='Add correction as text string in compact.')
     parser.add_argument('-f', action='store_true', help='Do not flip rotations.') 
     args = parser.parse_args()
-    print args
+    print( args)
 
     main(args)

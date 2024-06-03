@@ -80,7 +80,7 @@ def cmpSensors(a,b):
     h_a = getHalf(a.i)
     h_b = getHalf(b.i)
     if h_a != h_b:
-        print 'cannot compare in two different halves'
+        print ('cannot compare in two different halves')
         sys.exit(1)
     l_a = getModuleNrFromDeName(a.name)
     l_b = getModuleNrFromDeName(b.name)
@@ -114,14 +114,14 @@ def initParamMap():
     try:
         f = open(paramMapFile,'r')
     except IOError:
-        print 'Cannot open ', paramMapFile
+        print ('Cannot open ', paramMapFile)
         sys.exit(1)
     else:
         for line in f.readlines():
             if 'MilleParameter' in line:
                 continue
             paramMap[int(line.split()[0])] = line.split()[1]
-        print 'Initialized param map with ', len(paramMap), ' parameters'
+        print ('Initialized param map with ', len(paramMap), ' parameters')
         #for k,v in paramMap.iteritems():
         #    print k,' ', v
         f.close()
@@ -132,7 +132,7 @@ def getSensorName(i):
     if i in paramMap:
         return paramMap[i]
     else:
-        print 'Cannot find sensor for param ', i
+        print ('Cannot find sensor for param ', i)
         sys.exit(1)
 
 def printEigenInfo(mpfile='millepede.eve'):
@@ -151,10 +151,10 @@ def getResResults(mpresfile='millepede.res', ignoreZero=False):
     try:
         f = open(mpresfile,'r')
     except IOError:
-        print 'cannot open res file ' 
+        print ('cannot open res file ' )
         return result
     else:
-        print mpresfile
+        print (mpresfile)
         active=False
         for l in f.readlines():
             if active:
@@ -172,7 +172,7 @@ def getResResults(mpresfile='millepede.res', ignoreZero=False):
 def printResResults(mpresfile='millepede.res', ignoreZero=True):
     parameters = getResResults(mpresfile,ignoreZero)
     for p in parameters:
-        print p.toNiceString()
+        print (p.toNiceString())
     return
 
 def printResults():
@@ -215,7 +215,7 @@ def isAxial(deName):
     elif 'stereo' in deName:
         return False
     else:
-        print 'this deName doesnt contain axial or stereo ?! ' , deName
+        print ('this deName doesnt contain axial or stereo ?! ' , deName)
         sys.exit(1)
 
 def isHole(deName):
@@ -224,7 +224,7 @@ def isHole(deName):
     elif 'slot' in deName:
         return False
     else:
-        print 'this deName doesnt contain hole or slot?! ' , deName
+        print ('this deName doesnt contain hole or slot?! ' , deName)
         sys.exit(1)
 
 def getDir(param):
@@ -236,7 +236,7 @@ def getDir(param):
     elif i==3:
         return 'w'
     else:
-        print 'cannot extract dir from param ', param
+        print ('cannot extract dir from param ', param)
         sys.exit(1)
 
 def getType(param):
@@ -246,7 +246,7 @@ def getType(param):
     elif i==2:
         return 'r'
     else:
-        print 'cannot extract type from param ',param
+        print ('cannot extract type from param ',param)
         sys.exit(1)
 
 def getHalf(param):
@@ -256,7 +256,7 @@ def getHalf(param):
     elif i==2:
         return 'b'
     else:
-        print 'cannot extract half from param ',param
+        print ('cannot extract half from param ',param)
         sys.exit(1)
 
 
@@ -271,36 +271,36 @@ def getParamsFromModule(module):
     #This tells if it's a module
     m = re.search("M([1-7])([tb])_([tr])([uvw]$)", module) 
     if (m != None):
-        print "FOUND Module:",module
+        print ("FOUND Module:",module)
         return getParamsFromFullModule(module,m)
 
     #This tells if it's a double sensor
     m = re.search("D([5-7])([AS]?)([tb])_([tr])([uvw]$)", module)
     if (m != None):
-        print "FOUND Module:",module
+        print ("FOUND Module:",module)
         return getParamsFromDoubleSensor(module,m)
     
     #This tells if it's a support
     m = re.search("S([fb])([tb])_([tr])([uvw]$)", module)
     if (m != None):
-        print "FOUND Support:", module
+        print ("FOUND Support:", module)
         return getParamsFromSupport(module,m)
 
     if (m == None):
-        print "ERROR: can't find any match for",module
+        print ("ERROR: can't find any match for",module)
         sys.exit(1)
         
 
 def getParamsFromSupport(module,m):
     params = []
-    print m.groups()
+    print (m.groups())
     
     side = m.group(1)
     half = m.group(2)
     typ  = m.group(3)
     direction = m.group(4)
 
-    for k,v in paramMap.iteritems():
+    for k,v in paramMap.items():
         if "support" not in v:
             continue
 
@@ -315,7 +315,7 @@ def getParamsFromSupport(module,m):
 
 def getParamsFromFullModule(module,m):
     params = []
-    print m.groups()
+    print (m.groups())
 
     layer = int(m.group(1))
     half  = m.group(2)
@@ -323,7 +323,7 @@ def getParamsFromFullModule(module,m):
     direction = m.group(4)
     
     
-    for k,v in paramMap.iteritems():
+    for k,v in paramMap.items():
         #Skip whatever is not full module
         if "fullmodule" not in v:
             continue
@@ -340,7 +340,7 @@ def getParamsFromFullModule(module,m):
 
 def getParamsFromDoubleSensor(module,m):
     params = []
-    print m.groups()
+    print (m.groups())
 
     layer = int(m.group(1))
     axialOrStereo = m.group(2)
@@ -351,7 +351,7 @@ def getParamsFromDoubleSensor(module,m):
     if (layer < 5):
         print("ERROR::Double sensors are only in the back of the detector")
     
-    for k,v in paramMap.iteritems():
+    for k,v in paramMap.items():
         #Skip whatever is not double sensor
 #        print(v)
         if "doublesensor" not in v:
@@ -380,10 +380,10 @@ def getParamsFromSensor(module):
     params = []       
     m = re.search("L([1-7])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
     if m==None:
-        print 'Wrong module name format ', module, '. Should be matched by regexp. \'L[1-7][AS]?[hs]?[tb]_[tr][uvw]\''
+        print ('Wrong module name format ', module, '. Should be matched by regexp. \'L[1-7][AS]?[hs]?[tb]_[tr][uvw]\'')
         sys.exit(1) 
     else:
-        print m.groups()
+        print (m.groups())
         layer = int(m.group(1))
         axialOrStereo = m.group(2)
         holeOrSlot = m.group(3)
@@ -391,10 +391,10 @@ def getParamsFromSensor(module):
         typ = m.group(5)
         direction = m.group(6)
         if holeOrSlot!='' and layer < 4:
-            print 'L1-3 cannot have hole or slot defined ', module
+            print ('L1-3 cannot have hole or slot defined ', module)
             sys.exit(1)
-        print module, ': ', layer, ' ', axialOrStereo, ' ', holeOrSlot, ' ', half, ' ', typ, ' ', direction
-        for k,v in paramMap.iteritems():
+        print (module, ': ', layer, ' ', axialOrStereo, ' ', holeOrSlot, ' ', half, ' ', typ, ' ', direction)
+        for k,v in paramMap.items():
             if ("halfmodule" not in v):
                 continue;
             #print 'testing ', k,  ' ', v
@@ -420,8 +420,8 @@ def getParamsFromSensor(module):
                     #print 'found it'
                     params.append(k)
         if not bool(params):
-            print 'Cannot find millepede param for \'', module,'\''
-        print 'Found ', len(params),' params from \'', module,'\' :', params
+            print ('Cannot find millepede param for \'', module,'\'')
+        print ('Found ', len(params),' params from \'', module,'\' :', params)
         #sys.exit(0)
     return params
 
@@ -430,7 +430,7 @@ def getMinimStr(filename):
     try:
         f_min = open(filename,'r')
     except IOError:
-        print 'cannot open ', filename
+        print ('cannot open ', filename)
     else:
         for l in f_min.readlines():
             s += l
@@ -442,7 +442,7 @@ def getRunNr(name):
 #    m = re.search('hps_00(\d{4})\S',name)
     m = re.search('00(\d{4})\S',name)
     if m==None:
-        print 'Cannot find run number from ', name
+        print ('Cannot find run number from ', name)
 #        sys.exit(1)
     else:
         return int(m.group(1))

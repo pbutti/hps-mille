@@ -33,7 +33,7 @@ def getArgs():
     parser.add_argument('--com', dest="com",help="Use center of mass scheme",action="store_true",default=False)
     args = parser.parse_args()
 
-    print args
+    print (args)
     return args
 
 
@@ -45,7 +45,7 @@ def getDefaultParams(beamspot=False,year="2019"):
     elif (year=="2019"):
         maxModules=21
     else:
-        print "ERROR::getDefaultParams::year must be '2016' or '2019'"
+        print ("ERROR::getDefaultParams::year must be '2016' or '2019'")
     pars = []
     for h in range(1,3):
         for t in range(1,3):
@@ -118,7 +118,7 @@ def getParams(parfilename):
         try:
             f_pars = open(parfilename,'r')
         except IOError:
-            print 'cannot open ', parfilename
+            print ('cannot open ', parfilename)
         else:
             for l in f_pars.readlines():
                 if len(l.split())==3 or len(l.split())==5:
@@ -129,17 +129,17 @@ def getParams(parfilename):
 
 
 def updateFloatParams(pars,floats,fixedPreSigma = 0):
-    print 'There are ',len(floats),' parameters to float'    
+    print ('There are ',len(floats),' parameters to float'    )
     for i in floats:
         pfound = None
         for p in pars:
             if p.i==int(i):
                 pfound = p
         if pfound == None:
-            print 'Cannot find parameter ', i
+            print ('Cannot find parameter ', i)
             sys.exit(1)
         if args.debug:
-            print 'Float ', p.i
+            print ('Float ', p.i)
         
         print("PF::DEBUG",str(pfound.i))
         if str(pfound.i)[1]   == "1":
@@ -155,7 +155,7 @@ def updateFloatParams(pars,floats,fixedPreSigma = 0):
 
 
 def updateParams(pars,otherparms,resetActive=True):
-    print 'There are ',len(otherparms),' to update'
+    print ('There are ',len(otherparms),' to update')
     parsnew = []
     for p in pars:
         pfound = None
@@ -186,7 +186,7 @@ def buildSteerFile(name,args,pars,minimStr):
     try:
         f = open(name,'w')
     except IOError:
-        print 'cannot open file ', name
+        print ('cannot open file ', name)
         return False
     else:
         f.write("CFiles\n")
@@ -237,7 +237,7 @@ def buildSteerFile(name,args,pars,minimStr):
 
             else:
                 print("Single input folder")
-                print "Glob:",args.inDir+"/*"+re+"*.bin"
+                print ("Glob:",args.inDir+"/*"+re+"*.bin")
                 binFiles = glob.glob(args.inDir+"*"+re+"*.bin")
                 for ifile in binFiles:
                     f.write(ifile.strip() +"\n")
@@ -297,7 +297,7 @@ def saveResults(args):
     
 
 def runPede(filename,args):
-    print "Clean up..."
+    print ("Clean up...")
     status = subprocess.call("rm millepede.res", shell=True)
     status = subprocess.call("rm millepede.eve", shell=True)
     status = subprocess.call("rm millepede.log", shell=True)
@@ -306,23 +306,23 @@ def runPede(filename,args):
     s = pedeBin + " " + filename
     if args.subito:
         s+= " -s"
-    print 'Execute: ', s
+    print ('Execute: ', s)
     status = subprocess.call(s, shell=True)
 
 def main(args):
 
-    print "just GO"
+    print ("just GO")
 
     # initialize all the parameters into a list
     pars = getDefaultParams(args.beamspot,args.year)
-    print 'Found ', len(pars), 'default parameters'
+    print ('Found ', len(pars), 'default parameters')
 
     if args.com:
         utils.paramMapFile = './paramMaps/hpsSvtParamMap_2019_com.txt'
 
     if args.debug:
         for p in pars:
-            print p.toString()
+            print (p.toString())
     
 
 
@@ -330,17 +330,17 @@ def main(args):
 
     # check if there is a supplied parameter file.
     # this could be a result file from a previous fit
-    print "Parameters:", args.parameters
+    print ("Parameters:", args.parameters)
     inputpars = getParams(args.parameters)
-    print 'Found ', len(inputpars), ' parameters to update'
+    print ('Found ', len(inputpars), ' parameters to update')
     if args.parameters != None:
         if len(inputpars) != len(pars):
-            print 'Wrong number of input parameters. Require all to be present in the input file, but not all active'
+            print ('Wrong number of input parameters. Require all to be present in the input file, but not all active')
             sys.exit(1)
     
     if args.debug:
         for p in pars:
-            print p.toString()
+            print (p.toString())
 
     # update the default parameters with the new input file
     # normally require that they become inactive here
@@ -357,18 +357,18 @@ def main(args):
         floatingPars.extend(args.float)
         
 
-    #use a presigma of 50um
-    updateFloatParams(pars,floatingPars,0.05)
+    #use a presigma of 100um
+    updateFloatParams(pars,floatingPars,0.1)
 
-    print 'List of floating parameters:'
+    print ('List of floating parameters:')
     nfloats = 0
     for p in pars:
         if p.active>=0:
-            print p.toString()
+            print (p.toString())
             nfloats=nfloats+1
 
     if nfloats<1:
-        print 'Something is wrong. At least one parameter need to be floating before running.'
+        print ('Something is wrong. At least one parameter need to be floating before running.')
         sys.exit(1)
     
 
@@ -379,21 +379,21 @@ def main(args):
     name = "steer.txt"
     
     if len(args.inputfiles)==0 and len(args.flist)==0 and len(args.inDir)==0:
-        print "Specify input files [-i <inputfiles> ] or list of input files [-l <filelist>] or inputDirectory [-z <inDir>]"
+        print ("Specify input files [-i <inputfiles> ] or list of input files [-l <filelist>] or inputDirectory [-z <inDir>]")
         sys.exit(1)
 
     #ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.constraints, args.SC,args.BSC)
     ok = buildSteerFile(name,args,pars,minimStr)
     
     if not ok:
-        print "Couldn't build steering file"
+        print ("Couldn't build steering file")
         sys.exit(1)
 
     
     # run the fit
     runPede(name,args)
 
-    # print results
+    # print (results)
     printResults()
 
     # save results to a specific name if supplied.

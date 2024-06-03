@@ -25,24 +25,24 @@ def getSurveyMeasurements(parMap):
 def getBeamspotConstraints(parMap):
     s = '\n!Beamspot constraints\n'
     for d in ['u','v','w']:
-        print 'd=',d
+        print ('d=',d)
         for t in ['t','r']:
             for iAxial in range(2):
                 active = False
-                print 'iAx=',iAxial
+                print ('iAx=',iAxial)
                 for p, name in utils.paramMap.iteritems():
-                    print 'look at ', name, ' ', p
+                    print ('look at ', name, ' ', p)
                     if utils.getModuleNrFromDeName(name) != 0: continue
                     if (utils.isAxial(name) and iAxial==0) or (not utils.isAxial(name) and iAxial==1): continue
                     if utils.getDir(p) == d and utils.getType(p) == t:
-                        print 'found one',name, ' ', p
+                        print ('found one',name, ' ', p)
                         if not active:
-                            print 'ACTUVATE'
+                            print ('ACTUVATE')
                             s += 'Constraint 0.\n'    
                             s += '%s %.1f\n' % (p, 1.0)
                             active = True
                         else:
-                            print 'ADD'
+                            print ('ADD')
                             s += '%s %.1f\n' % (p, -1.0)
     return s
 
