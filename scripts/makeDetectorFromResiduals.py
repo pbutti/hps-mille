@@ -16,9 +16,9 @@ def OptionParse():
 
 def main():
     
-    print "makeDetectorFromResiduals.py"
+    print ("makeDetectorFromResiduals.py")
     args = OptionParse()
-    print args
+    print(args)
 
     #Get the iteration out of the tag
     iteration = int(args.inputTag.split("iter")[-1])
@@ -40,13 +40,13 @@ def main():
     Tag = baseTag + "_iter"+str(iteration)
     
     defaultDetectorLocation = args.javaFolder+"/detector-data/detectors/"
-    print "Copying: " + defaultDetectorLocation + args.inputTag +" to " + defaultDetectorLocation +Tag
+    print( "Copying: " + defaultDetectorLocation + args.inputTag +" to " + defaultDetectorLocation +Tag)
     cmd = "cp -r " + defaultDetectorLocation + args.inputTag + " " + defaultDetectorLocation +Tag
     
     if (os.path.exists(defaultDetectorLocation +Tag)):
-        print "ERROR:: "+defaultDetectorLocation +Tag+ " already exists! Exiting.."
+        print( "ERROR:: "+defaultDetectorLocation +Tag+ " already exists! Exiting..")
         if (args.clean):
-            print "Removing " + defaultDetectorLocation +Tag 
+            print( "Removing " + defaultDetectorLocation +Tag )
             try:
                 shutil.rmtree(defaultDetectorLocation +Tag)
             except OSError as e:
@@ -61,23 +61,23 @@ def main():
     #Now change the detector information inside the compact
     outputCompactXML =  defaultDetectorLocation +Tag + "/compact.xml"
 
-    print "Changing detector tag inside the compact"
+    print( "Changing detector tag inside the compact")
     compact_file = open(outputCompactXML, "r")
     list_of_lines = compact_file.readlines()
     lineIndex = 0
-    for index in xrange(len(list_of_lines)):
+    for index in range(len(list_of_lines)):
         if ("HPS_") in list_of_lines[index] and ("iter") in list_of_lines[index]:
             lineIndex = index
             break
             
 
-    print list_of_lines[lineIndex].strip() + "  --->  "  + '<info name="' + Tag + '">'
+    print( list_of_lines[lineIndex].strip() + "  --->  "  + '<info name="' + Tag + '">')
         
     list_of_lines[lineIndex] = '<info name="' + Tag + '"> \n'
     
     compact_file.close()
     
-    out_compact_file = open(outputCompactXML,"wb")
+    out_compact_file = open(outputCompactXML,"w")
     out_compact_file.writelines(list_of_lines)
     out_compact_file.close()
     
@@ -85,31 +85,31 @@ def main():
     
     #I assume i am in hps-mille
     cmd = "mv " + outputCompactXML + " ./compact.xml"
-    print cmd.split()
+    print( cmd.split())
     subprocess.call(cmd.split())
     
     #Call buildCompact
-    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-5.2-SNAPSHOT-bin.jar"
+    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-5.2.2-SNAPSHOT-bin.jar"
     residuals          = args.residuals
     
     
-    cmd = "python scripts/buildCompact.py -c compact.xml -j " + distributionBinary + " -r " + args.residuals + " -t"
+    cmd = "python3.6 scripts/buildCompact.py -c compact.xml -j " + distributionBinary + " -r " + args.residuals + " -t"
 
     if args.flipRotations:
         cmd += " -f"
-    print cmd.split()
+    print( cmd.split())
     subprocess.call(cmd.split())
     
     #Copy the compact_millepede.xml to the original location
 
     cmd = "mv ./compact_" + (args.residuals.split("/")[-1]).split(".res")[0]+".xml " + outputCompactXML
-    print cmd
+    print( cmd)
     subprocess.call(cmd.split())
 
 
     #Remove the lcdd in the new folder
     cmd = "rm " + defaultDetectorLocation +Tag + "/"+args.inputTag+".lcdd"
-    print cmd.split()
+    print( cmd.split())
     
     subprocess.check_call(cmd.split())
     
